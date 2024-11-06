@@ -1,7 +1,8 @@
+import HandlingValidations from "../../utils/handlingValidations.js";
 import AuthRepository from "../repositories/AuthRepository.js";
 import AuthValidationSchema from "../validators/AuthValidator.js";
 
-class AuthServices {
+class AuthServices extends HandlingValidations {
   async test() {
     return await AuthRepository.test();
   }
@@ -11,19 +12,12 @@ class AuthServices {
       abortEarly: false,
     });
 
-    if (error) {
-      throw this.#createError(
-        400,
-        error.details.map((err) => ({
-          [err.context.key] : err.message
-        }))
-      );
-    }
+    this.handleValidation(error);
 
     try {
       return await AuthRepository.RegisterUser(body);
     } catch (e) {
-      this.#handleRegistrationError(e);
+      this.handleRegistrationError(e);
     }
   }
 
@@ -34,47 +28,12 @@ class AuthServices {
       abortEarly: false,
     });
 
-    if (error) {
-      throw this.#createError(
-        400,
-        error.details.map((err) => err.message).join(", ")
-      );
-    }
+    this.handleValidation(error);
 
     try {
       return await AuthRepository.LoginUser(email, password);
     } catch (e) {
-      throw this.#createError(
-        e.message === "User not exist!" ? 404 : 400,
-        "Ugh, " + e.message
-      );
-    }
-  }
-
-  #createError(statusCode, message) {
-    return {
-      statusCode,
-      message,
-    };
-  }
-
-  #handleRegistrationError(error) {
-    if (error.message === "Invalid role") {
-      throw {
-        statusCode: 400,
-        message: "Ugh, that role doesn’t exist! *pouts*",
-      };
-    } else if (error.code === "P2002") {
-      throw {
-        statusCode: 400,
-        message:
-          "Oh no! A user with that email already exists! *dramatic gasp*",
-      };
-    } else {
-      throw {
-        statusCode: 500,
-        message: "Something went wrong... *sigh* Please try again later!",
-      };
+      throw new Error("Ugh, " + e.message);
     }
   }
 }

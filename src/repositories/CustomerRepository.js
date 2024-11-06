@@ -112,6 +112,28 @@ class CustomerRepository extends BaseRepository {
             }
         })
     }
+
+    async listsCustomer(body){
+        const { search } = body;
+        const items = await this.prisma.customer.findMany({
+            select:{
+                id:true,
+                name:true
+            },
+            where:{
+                name:{contains: search , mode: 'insensitive'}
+            },
+            take:5
+        });
+
+        const data = items.map(item => ({
+            id: item.id,
+            value: item.name,
+            label: `${item.name.charAt(0).toUpperCase() + item.name.slice()}`
+        }))
+
+        return data;
+    }
 }
 
 export default new CustomerRepository();

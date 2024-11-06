@@ -13,9 +13,8 @@ class CustomerController {
     }
 
     async getCustomerById(req , res) {
-        const {id} = req.params
         try{
-            const data = await CustomerServices.getCustomerById(id);
+            const data = await CustomerServices.getCustomerById(req.params.id);
             return sendResponse(res , 200 , true , "Yay! there is a data :D " , data);
         }catch(e){
             console.log(e);
@@ -34,9 +33,8 @@ class CustomerController {
     }
 
     async updateCustomer(req , res){
-        const {id} = req.params;
         try{
-            const data = await CustomerServices.updateCustomer(id , req.body);
+            const data = await CustomerServices.updateCustomer(req.params.id , req.body);
             return sendResponse(res , 200 , true , "Customer updated successfully" , data)
         }catch(e){
             console.log(e);
@@ -45,9 +43,8 @@ class CustomerController {
     }
 
     async deleteCustomer(req , res){
-        const {id} = req.params;
         try{
-            const data = await CustomerServices.deleteCustomerr(id)
+            const data = await CustomerServices.deleteCustomerr(req.params.id)
             return sendResponse(res , 200 , true , "Customer deleted successfully" , data)
         }catch(e){
             console.log(e);
@@ -57,7 +54,8 @@ class CustomerController {
 
     async getTrashedCustomer(req ,res){
         try{
-
+            const data = await CustomerServices.revDeleteCustomer(req.query);
+            return sendResponse(res , 200 , true , "Receiving trash user successfully :D" , data)
         }catch(e){
             console.log(e);
             return sendErrorResponse(res , 500 , false , "Internal server error")
@@ -66,7 +64,8 @@ class CustomerController {
 
     async restoreCustomer(req , res){
         try{
-
+            const data = await CustomerServices.restoreCustomer(req.params.id);
+            return sendResponse(res , 200 , true , "Customer restored successfully" , data)
         }catch(e){
             console.log(e);
             return sendErrorResponse(res , 500 , false , "Internal server error")
@@ -75,7 +74,18 @@ class CustomerController {
 
     async permanentlyDeleteCustomer(req , res){
         try{
+            const data = await CustomerServices.forceDeleteCustomer(req.params.id);
+            return sendResponse(res , 200 , true , "Customer permanently deleted successfully" , data)
+        }catch(e){
+            console.log(e);
+            return sendErrorResponse(res , 500 , false , "Internal server error")
+        }
+    }
 
+    async getDropDownCustomer(req ,res){
+        try{
+            const data = await CustomerServices.listDropDownCustomer(req.body);
+            return sendResponse(res , 200 , true , "Yay! there is a data :D " , data)
         }catch(e){
             console.log(e);
             return sendErrorResponse(res , 500 , false , "Internal server error")
