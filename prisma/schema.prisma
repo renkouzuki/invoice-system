@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String    @unique
+  email        String    @unique
+  password     String
+  profile      String?
+  roleId       String
+  role         Role      @relation(fields: [roleId], references: [id])
+  deleted_at   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  auth_session Session[]
+
+  @@index([name, email, roleId])
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@index([userId])
+}
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  date          DateTime
+  subTotal      Decimal       @db.Decimal(10, 2)
+  deposit       Decimal       @db.Decimal(10, 2)
+  deliveryFee   Decimal       @db.Decimal(10, 2)
+  finalPayment  Decimal       @db.Decimal(10, 2)
+  items         InvoiceItem[]
+  bankName      String
+  accountName   String
+  accountNumber String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  customerId    String
+  deleted_at    DateTime?
+
+  @@index([createdAt(sort: Desc), invoiceNumber])
+}
+
+model LastInvoiceNumber {
+  id    Int @id @default(1)
+  value Int
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  description String
+  unit        String
+  quantity    Decimal @db.Decimal(10, 2)
+  price       Decimal @db.Decimal(10, 2)
+  amount      Decimal @db.Decimal(10, 2)
+  invoice     Invoice @relation(fields: [invoiceId], references: [id] , onDelete: Cascade)
+  invoiceId   String
+}
+
+model Customer {
+  id        String    @id @default(uuid())
+  name      String
+  attention String?
+  tel       String?
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deleted_at    DateTime?
+
+  @@index([name, attention, tel, createdAt(sort: Desc)])
+}

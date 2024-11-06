@@ -1,0 +1,4 @@
+const schema = Joi.object({
+  roleId: Joi.string().required(),
+  permissions: Joi.array().items(Joi.string()).required(),
+});

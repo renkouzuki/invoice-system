@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      DATABASE_URL: "postgresql://invoice_owner:tYXF0lSg4aKB@ep-muddy-scene-a1qutmpw.ap-southeast-1.aws.neon.tech/invoice?sslmode=require"
+      PORT: 5000
+    volumes:
+      - .:/usr/src/app

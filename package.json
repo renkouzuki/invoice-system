@@ -1,0 +1,35 @@
+{
+  "name": "invoicing-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "renko": "nodemon server.js",
+    "db_seed": "node db_seed/MainSeeder.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@faker-js/faker": "^9.1.0",
+    "@lucia-auth/adapter-prisma": "^4.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "invoicing-system": "file:",
+    "joi": "^17.13.3",
+    "lucia": "^3.2.2",
+    "winston": "^3.15.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.21.1",
+    "nodemon": "^3.1.7",
+    "prisma": "^5.21.1"
+  }
+}
